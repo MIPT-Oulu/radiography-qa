@@ -2,7 +2,7 @@ from pathlib import Path
 from time import time
 from pylinac import LeedsTOR
 
-from natiivi_lv.normi13 import Normi13
+from normi13_qa.normi13 import Normi13
 from argparse import ArgumentParser
     
 if __name__ == "__main__":

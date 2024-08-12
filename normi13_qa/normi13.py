@@ -17,10 +17,10 @@ from pylinac.core.contrast import Contrast
 from pylinac.core.image import DicomImage
 from pylinac.core.utilities import ResultsDataMixin
 
-from natiivi_lv.constants import (IMAGING_PARAMETERS, HIGH_CONTRAST_ROI_SETTINGS, LINE_PAIR_PATTERN_SETTINGS,
+from normi13_qa.constants import (IMAGING_PARAMETERS, HIGH_CONTRAST_ROI_SETTINGS, LINE_PAIR_PATTERN_SETTINGS,
                                   LOW_CONTRAST_ROI_SETTINGS, UNIFORMITY_ROI_SETTINGS, TEST_ROI_SETTINGS,
                                   TEST_ROI_LPS_SETTINGS)
-from natiivi_lv.utilities import ratio
+from normi13_qa.utilities import ratio
 
 
 class Normi13(ResultsDataMixin[PlanarResult]):

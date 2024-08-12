@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='natiivi_lv',
+    name='normi13_qa',
     version='0.1',
     description='Quality assurance of computed radiography devices.',
     author='Santeri Rytky',

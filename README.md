@@ -10,8 +10,8 @@ analysis method was developed for the Normi 13 -phantom.
 ### Installation
 - [Anaconda installation](https://docs.anaconda.com/anaconda/install/) 
 ```
-git clone https://github.com/MIPT-Oulu/natiivi-lv.git
-cd natiivi-lv
+git clone https://github.com/MIPT-Oulu/radiography-qa.git
+cd radiography-qa
 ```
 Install the repository requirements
 ```
@@ -23,7 +23,7 @@ pip install -e .
 ```
 or
 ```
-pip install git+https://github.com/MIPT-Oulu/natiivi-lv.git
+pip install git+https://github.com/MIPT-Oulu/radiography-qa.git
 ```
 
 
