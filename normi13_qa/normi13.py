@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 import cv2
+from warnings import filterwarnings
 import pickle  # This is very handy for storing dictionaries
 from pylinac.planar_imaging import HighContrastDiskROI, LowContrastDiskROI, PlanarResult
 from pylinac.core.mtf import MTF, MomentMTF
@@ -19,7 +20,7 @@ from pylinac.core.utilities import ResultsDataMixin
 
 from normi13_qa.constants import (IMAGING_PARAMETERS, HIGH_CONTRAST_ROI_SETTINGS, LINE_PAIR_PATTERN_SETTINGS,
                                   LOW_CONTRAST_ROI_SETTINGS, UNIFORMITY_ROI_SETTINGS, TEST_ROI_SETTINGS,
-                                  TEST_ROI_LPS_SETTINGS)
+                                  TEST_ROI_LPS_SETTINGS, LOW_CONTRAST_BG_ROI_SETTINGS)
 from normi13_qa.utilities import ratio
 
 
@@ -93,9 +94,7 @@ class Normi13(ResultsDataMixin[PlanarResult]):
                  debug: bool = False,
                  fig_path: Path = None,
                  mtf_mode: str = 'relative',
-                 high_contrast_threshold: float = 0.5,
-                 low_contrast_threshold: float = 0.05,
-                 visibility_threshold: float = 0.025):
+                 ):
 
         # Plot intermediate figures
         self.plot = plot
@@ -140,11 +139,8 @@ class Normi13(ResultsDataMixin[PlanarResult]):
         else:
             self.mtf_mode = 'relative'
 
-        # Thresholds
-        self.high_contrast_threshold = high_contrast_threshold
-        self.low_contrast_threshold = low_contrast_threshold
+        # Method for low-contrast analysis
         self._low_contrast_method = Contrast.MICHELSON
-        self.visibility_threshold = visibility_threshold
 
     def _crop_and_find_angle(self):
         """
@@ -477,6 +473,21 @@ class Normi13(ResultsDataMixin[PlanarResult]):
             )
 
         # Low contrast tests
+
+        # Background ROIs
+        bg_rois = {}
+        for roi_name, stng in LOW_CONTRAST_BG_ROI_SETTINGS.items():
+            bg_rois[roi_name] = LowContrastDiskROI(
+                self.dcm_img,
+                stng["angle"] - self.phantom_angle,
+                self.side_length * stng["roi radius"],
+                self.side_length * stng["distance from center"],
+                Point(self.phantom_center),  # Pattern center, reverse the x and y dimensions from OpenCV
+                contrast_threshold=self.low_contrast_threshold,
+            )
+        # Mean of the median pixel values in each background ROI
+        avg_bg = np.mean([roi.pixel_value for roi in bg_rois.values()])
+
         for roi_name, stng in LOW_CONTRAST_ROI_SETTINGS.items():
             self.low_contrast_rois[roi_name] = LowContrastDiskROI(
                 self.dcm_img,
@@ -485,7 +496,8 @@ class Normi13(ResultsDataMixin[PlanarResult]):
                 self.side_length * stng["distance from center"],
                 Point(self.phantom_center),  # Pattern center, reverse the x and y dimensions from OpenCV
                 contrast_threshold=self.low_contrast_threshold,
-                contrast_reference=self.bg_mean,
+                # contrast_reference=self.bg_mean,
+                contrast_reference=bg_rois[roi_name].pixel_value,  # Compare to neighboring ROI
                 contrast_method=self._low_contrast_method,
                 visibility_threshold=self.visibility_threshold,
             )
@@ -502,7 +514,10 @@ class Normi13(ResultsDataMixin[PlanarResult]):
             for roi in self.high_contrast_rois.values():
                 roi.plot2axes(ax[1], edgecolor='blue')
             for roi in self.low_contrast_rois.values():
-                roi.plot2axes(ax[1], edgecolor='blue')
+                roi.plot2axes(ax[1], edgecolor=roi.plot_color)
+            if self.debug:
+                for roi in bg_rois.values():
+                    roi.plot2axes(ax[1], edgecolor='blue')
             ax[1].set_title('High- and low-contrast ROIs')
             plt.tight_layout()
             name = (f'_{self.dataset.metadata.StationName}_{self.dataset.metadata.PatientID}_'
@@ -596,6 +611,9 @@ class Normi13(ResultsDataMixin[PlanarResult]):
                 # Pattern center, reverse the x and y dimensions from OpenCV
                 self.high_contrast_threshold,
             )
+
+        # Filter out unnecessary warnings
+        filterwarnings("ignore", category=UserWarning)
 
         # ROI spacings
         spacings = [roi['lp/mm'] for roi in LINE_PAIR_PATTERN_SETTINGS.values()]
@@ -704,16 +722,27 @@ class Normi13(ResultsDataMixin[PlanarResult]):
             phantom_area=area,
         )
 
+        # Filter out unnecessary warnings
+        filterwarnings("ignore", category=UserWarning)
+
         if self.mtf is not None:
-            data.mtf_lp_mm = {
-                p: self.mtf.relative_resolution(p) for p in range(10, 91, 10)
-            }
+            data.mtf_lp_mm = (
+                {p: self.mtf.relative_resolution(p) for p in range(10, 91, 10)}
+            )
         return data
 
-    def analyze(self):
+    def analyze(self,
+                high_contrast_threshold: float = 0.5,
+                low_contrast_threshold: float = 0.05,
+                visibility_threshold: float = 0.025
+                ):
         """
         A simple main function to run the analysis pipeline.
         """
+        # Thresholds
+        self.high_contrast_threshold = high_contrast_threshold
+        self.low_contrast_threshold = low_contrast_threshold
+        self.visibility_threshold = visibility_threshold
 
         # Crop the image based on circles at the edge of the phantom,
         self._crop_and_find_angle()

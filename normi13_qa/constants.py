@@ -8,21 +8,21 @@ UNIFORMITY_ROI_SETTINGS = {
 }
 
 LOW_CONTRAST_ROI_SETTINGS = {
-    'lc_08': {'distance from center': 0.3075, 'angle': -35, 'roi radius': 0.01},
-    'lc_12': {'distance from center': 0.2712, 'angle': -22, 'roi radius': 0.01},
-    'lc_20': {'distance from center': 0.2512, 'angle': -7, 'roi radius': 0.01},
-    'lc_28': {'distance from center': 0.2512, 'angle': 7, 'roi radius': 0.01},
-    'lc_40': {'distance from center': 0.2712, 'angle': 22, 'roi radius': 0.01},
-    'lc_56': {'distance from center': 0.3075, 'angle': 35, 'roi radius': 0.01},
+    'lc_08': {'distance from center': 0.312, 'angle': -35.5, 'roi radius': 0.013},
+    'lc_12': {'distance from center': 0.275, 'angle': -23.5, 'roi radius': 0.013},
+    'lc_20': {'distance from center': 0.255, 'angle': -7.5, 'roi radius': 0.013},
+    'lc_28': {'distance from center': 0.255, 'angle': 7.5, 'roi radius': 0.013},
+    'lc_40': {'distance from center': 0.275, 'angle': 23.5, 'roi radius': 0.013},
+    'lc_56': {'distance from center': 0.312, 'angle': 35.5, 'roi radius': 0.013},
 }
 
 LOW_CONTRAST_BG_ROI_SETTINGS = {
-    'lc_08_bg': {'distance from center': 0.2575, 'angle': -43, 'roi radius': 0.02},
-    'lc_12_bg': {'distance from center': 0.2128, 'angle': -29, 'roi radius': 0.02},
-    'lc_20_bg': {'distance from center': 0.1911, 'angle': -9, 'roi radius': 0.02},
-    'lc_28_bg': {'distance from center': 0.1911, 'angle': 9, 'roi radius': 0.02},
-    'lc_40_bg': {'distance from center': 0.2128, 'angle': 29, 'roi radius': 0.02},
-    'lc_56_bg': {'distance from center': 0.2575, 'angle': 43, 'roi radius': 0.02},
+    'lc_08': {'distance from center': 0.259, 'angle': -43.5, 'roi radius': 0.02},
+    'lc_12': {'distance from center': 0.215, 'angle': -30, 'roi radius': 0.02},
+    'lc_20': {'distance from center': 0.189, 'angle': -10, 'roi radius': 0.02},
+    'lc_28': {'distance from center': 0.189, 'angle': 10, 'roi radius': 0.02},
+    'lc_40': {'distance from center': 0.215, 'angle': 30, 'roi radius': 0.02},
+    'lc_56': {'distance from center': 0.259, 'angle': 43.5, 'roi radius': 0.02},
 }
 
 # High contrast ROIs and the location of the line pair pattern
